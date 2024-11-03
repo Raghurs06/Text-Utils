@@ -4,19 +4,23 @@ export default function TextForm(props) {
   const handleUpClick = () => {
     let newText = text.toUpperCase();
     setText(newText);
+    props.showAlert(" Text is converted to Upper Case", "success");
   };
   const handleLoClick = () => {
     let newText = text.toLowerCase();
     setText(newText);
+    props.showAlert(" Text is converted to Lower Case", "success");
   }; 
   const handleCopyClick = () => {
-    let newText = text;
-    navigator.clipboard.writeText(newText);
+    navigator.clipboard.writeText(text);
+    // document.getSelection().removeAllRanges();
+    props.showAlert(" Text is copied to clipboard", "success");
   };
   const handleDownloadClick = () => {
     let newText = text;
     setText(newText);
     const blob = new Blob([newText], { type: "text/plain" });
+    props.showAlert(" Text is Downloaded", "success");
 
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -32,10 +36,12 @@ export default function TextForm(props) {
   const handleExtraSpace = () => {
     let newText = text.split(/[ ]+/);  //text.split(/\s+/) can also be used 
     setText(newText.join(" "));
+    props.showAlert(" Extra space is removed form the text", "success");
   }
   const handleClearClick = () => {
     let newText = "";
     setText(newText);
+    props.showAlert("  Text is Cleared", "success");
   };
   const handleOnChange = (event) => {
     setText(event.target.value);
@@ -43,7 +49,7 @@ export default function TextForm(props) {
   const [text, setText] = useState("Enter your Text here");
   return (
     <>
-      <div className="container">
+      <div className="container" style={{color: props.mode === 'dark'?'white':'#042743'}}>
         <h1>{props.heading}</h1>
         <div className="mb-3">
           <label htmlFor="myBox" className="form-label">
@@ -53,37 +59,38 @@ export default function TextForm(props) {
             className="form-control"
             value={text}
             onChange={handleOnChange}
+            style={{backgroundColor: props.mode === 'dark'?'#042743':'white', color: props.mode === 'dark'?'white':'#042743'}}
             id="myBox"
             rows="8"
           ></textarea>
         </div>
-        <button className="btn btn-primary" onClick={handleUpClick}>
+        <button disabled = {text.length === 0} className="btn btn-primary my-1" onClick={handleUpClick}>
           Cconvert to Uppercase
         </button>
-        <button className="btn btn-primary mx-1" onClick={handleLoClick}>
+        <button disabled = {text.length === 0} className="btn btn-primary mx-1 my-1" onClick={handleLoClick}>
           Convert to Lowercase
         </button>
-        <button className="btn btn-primary mx-1" onClick={handleExtraSpace}>
+        <button disabled = {text.length === 0} className="btn btn-primary mx-1 my-1" onClick={handleExtraSpace}>
           Remove Extra Space
         </button>
-        <button className="btn btn-primary mx-1" onClick={handleCopyClick}>
+        <button disabled = {text.length === 0} className="btn btn-primary mx-1 my-1" onClick={handleCopyClick}>
           Copy Text
         </button>
-        <button className="btn btn-primary mx-1" onClick={handleDownloadClick}>
+        <button disabled = {text.length === 0} className="btn btn-primary mx-1 my-1" onClick={handleDownloadClick}>
           Download Text
         </button>
-        <button className="btn btn-primary mx-1" onClick={handleClearClick}>
+        <button disabled = {text.length === 0} className="btn btn-primary mx-1 my-1" onClick={handleClearClick}>
           Clear Text
         </button>
       </div>
-      <div className="container my-3">
+      <div className="container my-3" style={{color: props.mode === 'dark'?'white':'#042743'}}>
         <h1>Your Text Summary</h1>
         <p>
-          {text.split(" ").length - 1} words and {text.length} characters
+          {text.split(/\s+/).filter((element)=>{ return element.length!==0}).length} words and {text.length} characters
         </p>
-        <p>{0.08 * text.split(" ").length} Minutes to read</p>
+        <p>{0.08 * text.split(" ").filter((element)=>{ return element.length!==0}).length} Minutes to read</p>
         <h2>Preview</h2>
-        <p>{text}</p>
+        <p>{text.length>0?text:'Enter text in the above text area to preview something'}</p>
       </div>
     </>
   );
